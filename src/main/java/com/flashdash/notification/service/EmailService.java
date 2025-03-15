@@ -21,7 +21,7 @@ public class EmailService {
             message.setTo(to);
             message.setSubject(subject);
             message.setText(content);
-            message.setFrom("no-reply@flashdash.com");
+            message.setFrom("flashdashservice@gmail.com");
             mailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,10 +2,7 @@ package com.flashdash.notification.controller;
 
 import com.flashdash.notification.service.NotificationService;
 import com.flashdash.notification.util.UserContext;
-import com.p4r1nc3.flashdash.notification.model.AccountConfirmationRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,32 +25,26 @@ public class NotificationController {
     }
 
     @PostMapping("/confirm-account")
-    public ResponseEntity<String> sendAccountConfirmationEmail(@RequestBody AccountConfirmationRequest request) {
-        notificationService.sendAccountConfirmationEmail(request);
-        return ResponseEntity.accepted().body("Confirmation email sent successfully");
+    public ResponseEntity<Void> sendAccountConfirmationEmail(@RequestParam String token) {
+        notificationService.sendAccountConfirmationEmail(token);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/friend-invite")
-    public ResponseEntity<String> sendFriendInviteEmail(@RequestParam String recipientEmail) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String senderEmail = authentication.getName();
-        notificationService.sendFriendInviteEmail(recipientEmail, senderEmail);
-        return ResponseEntity.accepted().body("Friend invitation email sent successfully");
+    public ResponseEntity<Void> sendFriendInviteEmail() {
+        notificationService.sendFriendInviteEmail();
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/daily/enable")
-    public ResponseEntity<String> enableDailyNotifications() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        notificationService.enableDailyNotifications(userEmail);
-        return ResponseEntity.ok("Daily notifications enabled successfully");
+    public ResponseEntity<Void> enableDailyNotifications() {
+        notificationService.enableDailyNotifications();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/daily/disable")
-    public ResponseEntity<String> disableDailyNotifications() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        notificationService.disableDailyNotifications(userEmail);
-        return ResponseEntity.ok("Daily notifications disabled successfully");
+    public ResponseEntity<Void> disableDailyNotifications() {
+        notificationService.disableDailyNotifications();
+        return ResponseEntity.ok().build();
     }
 }
