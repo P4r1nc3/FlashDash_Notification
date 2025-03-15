@@ -9,19 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-    private final UserContext userContext;
     private final NotificationService notificationService;
 
-    public NotificationController(UserContext userContext, NotificationService notificationService) {
-        this.userContext = userContext;
+    public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
-    }
-
-    @GetMapping
-    public ResponseEntity<Void> getTest() {
-        System.out.println(userContext.getUserEmail() + " " + userContext.getUserFrn());
-
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/confirm-account")
