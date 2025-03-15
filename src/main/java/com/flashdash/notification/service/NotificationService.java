@@ -13,8 +13,7 @@ public class NotificationService {
     @Value("${base.url}")
     private String baseUrl;
 
-    public NotificationService(UserContext userContext,
-                               EmailService emailService) {
+    public NotificationService(UserContext userContext, EmailService emailService) {
         this.userContext = userContext;
         this.emailService = emailService;
     }
@@ -22,29 +21,41 @@ public class NotificationService {
     public void sendAccountConfirmationEmail(String token) {
         String confirmationLink = baseUrl + "/auth/activate?token=" + token;
         String email = userContext.getUserEmail();
-        String subject = "Account Activation";
-        String content = "Click the link to activate your account: " + confirmationLink;
+        String subject = "Confirm Your FlashDash Account";
+        String content = "<strong>Welcome to FlashDash!</strong><br><br>" +
+                "Click the button below to activate your account:<br><br>" +
+                "<a href='" + confirmationLink + "' class='button'>Activate Account</a>";
+
         emailService.sendEmail(email, subject, content);
     }
 
     public void sendFriendInviteEmail() {
         String email = userContext.getUserEmail();
-        String subject = "You have a new Friend Invitation!";
-        String content = "Hi! You've received a friend invitation. Visit FlashDash to accept or decline.";
+        String subject = "🎉 New Friend Invitation on FlashDash!";
+        String content = "<strong>You have a new friend request!</strong><br><br>" +
+                "Someone has sent you a friend invitation. Click below to check your invites:<br><br>" +
+                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+
         emailService.sendEmail(email, subject, content);
     }
 
     public void enableDailyNotifications() {
         String email = userContext.getUserEmail();
-        String subject = "Daily Notifications Enabled";
-        String content = "You've successfully enabled daily learning reminders!";
+        String subject = "🔔 Daily Notifications Enabled!";
+        String content = "<strong>Great news!</strong><br><br>" +
+                "You have successfully enabled daily learning reminders. Stay on track with your goals!<br><br>" +
+                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+
         emailService.sendEmail(email, subject, content);
     }
 
     public void disableDailyNotifications() {
         String email = userContext.getUserEmail();
-        String subject = "Daily Notifications Disabled";
-        String content = "You've successfully disabled daily reminders.";
+        String subject = "🔕 Daily Notifications Disabled";
+        String content = "<strong>You have disabled daily reminders.</strong><br><br>" +
+                "You will no longer receive learning notifications. You can re-enable them anytime.<br><br>" +
+                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+
         emailService.sendEmail(email, subject, content);
     }
 }
