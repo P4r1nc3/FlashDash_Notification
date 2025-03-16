@@ -33,7 +33,10 @@ class NotificationServiceTest {
     private EmailService emailService;
 
     @MockitoBean
-    private SubscriberRepository repository;
+    private NotificationSchedulerService notificationSchedulerService;
+
+    @MockitoBean
+    private SubscriberRepository subscriberRepository;
 
     private Subscriber subscriber;
 
@@ -87,13 +90,15 @@ class NotificationServiceTest {
     void testEnableDailyNotifications_DefaultTime() {
         // Given
         when(userContext.getUserFrn()).thenReturn(subscriber.getUserFrn());
-        when(repository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
+        when(subscriberRepository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
 
         // When
         notificationService.enableDailyNotifications(null);
 
         // Then
-        verify(repository, times(1)).save(subscriber);
+        verify(subscriberRepository, times(1)).save(subscriber);
+        verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
+        verify(notificationSchedulerService, times(1)).scheduleNotification(subscriber);
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔔 Daily Notifications Enabled!"),
@@ -105,7 +110,7 @@ class NotificationServiceTest {
     void testEnableDailyNotifications_CustomTime() {
         // Given
         when(userContext.getUserFrn()).thenReturn(subscriber.getUserFrn());
-        when(repository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
+        when(subscriberRepository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
 
         LocalTime customTime = LocalTime.of(14, 30);
 
@@ -113,7 +118,9 @@ class NotificationServiceTest {
         notificationService.enableDailyNotifications(customTime);
 
         // Then
-        verify(repository, times(1)).save(subscriber);
+        verify(subscriberRepository, times(1)).save(subscriber);
+        verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
+        verify(notificationSchedulerService, times(1)).scheduleNotification(subscriber);
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔔 Daily Notifications Enabled!"),
@@ -125,26 +132,31 @@ class NotificationServiceTest {
     void testEnableDailyNotifications_UserNotFound() {
         // Given
         when(userContext.getUserFrn()).thenReturn("unknown-user");
-        when(repository.findByUserFrn("unknown-user")).thenReturn(Optional.empty());
+        when(subscriberRepository.findByUserFrn("unknown-user")).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> notificationService.enableDailyNotifications(null))
                 .isInstanceOf(FlashDashException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.E404001)
                 .hasMessage("User not found.");
+
+        verify(subscriberRepository, never()).save(any());
+        verify(notificationSchedulerService, never()).scheduleNotification(any());
+        verify(emailService, never()).sendEmail(any(), any(), any());
     }
 
     @Test
     void testDisableDailyNotifications() {
         // Given
         when(userContext.getUserFrn()).thenReturn(subscriber.getUserFrn());
-        when(repository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
+        when(subscriberRepository.findByUserFrn(subscriber.getUserFrn())).thenReturn(Optional.of(subscriber));
 
         // When
         notificationService.disableDailyNotifications();
 
         // Then
-        verify(repository, times(1)).save(subscriber);
+        verify(subscriberRepository, times(1)).save(subscriber);
+        verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔕 Daily Notifications Disabled"),
@@ -156,12 +168,16 @@ class NotificationServiceTest {
     void testDisableDailyNotifications_UserNotFound() {
         // Given
         when(userContext.getUserFrn()).thenReturn("unknown-user");
-        when(repository.findByUserFrn("unknown-user")).thenReturn(Optional.empty());
+        when(subscriberRepository.findByUserFrn("unknown-user")).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> notificationService.disableDailyNotifications())
                 .isInstanceOf(FlashDashException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.E404001)
                 .hasMessage("User not found.");
+
+        verify(subscriberRepository, never()).save(any());
+        verify(notificationSchedulerService, never()).cancelScheduledNotification(any());
+        verify(emailService, never()).sendEmail(any(), any(), any());
     }
 }
