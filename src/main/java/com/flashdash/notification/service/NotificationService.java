@@ -1,5 +1,7 @@
 package com.flashdash.notification.service;
 
+import com.flashdash.notification.exception.ErrorCode;
+import com.flashdash.notification.exception.FlashDashException;
 import com.flashdash.notification.model.NotificationChannel;
 import com.flashdash.notification.model.NotificationSubscriber;
 import com.flashdash.notification.repository.NotificationSubscriberRepository;
@@ -32,7 +34,7 @@ public class NotificationService {
         String email = userContext.getUserEmail();
 
         if (repository.existsByUserFrn(userFrn)) {
-            throw new IllegalStateException("User already registered.");
+            throw new FlashDashException(ErrorCode.E409001, "User already registered.");
         }
 
         NotificationSubscriber subscriber = new NotificationSubscriber();
@@ -51,9 +53,10 @@ public class NotificationService {
         String userFrn = userContext.getUserFrn();
 
         if (!repository.existsByUserFrn(userFrn)) {
-            throw new IllegalStateException("User not found.");
+            throw new FlashDashException(ErrorCode.E404001, "User not found.");
         }
-        repository.deleteById(userFrn);
+
+        repository.deleteByUserFrn(userFrn);
     }
 
     public void sendAccountConfirmationEmail(String token) {

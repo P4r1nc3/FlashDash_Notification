@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationSubscriberRepository extends JpaRepository<NotificationSubscriber, String> {
     boolean existsByUserFrn(String userFrn);
+    void deleteByUserFrn(String userFrn);
 }
