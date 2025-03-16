@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.LocalTime;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,15 +52,29 @@ class NotificationControllerTest {
     }
 
     @Test
-    void testEnableDailyNotifications() {
+    void testEnableDailyNotifications_DefaultTime() {
         // Given
-        doNothing().when(notificationService).enableDailyNotifications();
+        doNothing().when(notificationService).enableDailyNotifications(null);
 
         // When
-        ResponseEntity<Void> response = notificationController.enableDailyNotifications();
+        ResponseEntity<Void> response = notificationController.enableDailyNotifications(null);
 
         // Then
-        verify(notificationService, times(1)).enableDailyNotifications();
+        verify(notificationService, times(1)).enableDailyNotifications(null);
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+    }
+
+    @Test
+    void testEnableDailyNotifications_CustomTime() {
+        // Given
+        LocalTime customTime = LocalTime.of(14, 30);
+        doNothing().when(notificationService).enableDailyNotifications(customTime);
+
+        // When
+        ResponseEntity<Void> response = notificationController.enableDailyNotifications(customTime);
+
+        // Then
+        verify(notificationService, times(1)).enableDailyNotifications(customTime);
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
     }
 
