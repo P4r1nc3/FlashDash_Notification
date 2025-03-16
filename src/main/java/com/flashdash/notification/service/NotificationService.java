@@ -27,7 +27,10 @@ public class NotificationService {
         this.emailService = emailService;
     }
 
-    public void registerUser(String userFrn, String email) {
+    public void registerUser() {
+        String userFrn = userContext.getUserFrn();
+        String email = userContext.getUserEmail();
+
         if (repository.existsByUserFrn(userFrn)) {
             throw new IllegalStateException("User already registered.");
         }
@@ -44,7 +47,9 @@ public class NotificationService {
         repository.save(subscriber);
     }
 
-    public void unregisterUser(String userFrn) {
+    public void unregisterUser() {
+        String userFrn = userContext.getUserFrn();
+
         if (!repository.existsByUserFrn(userFrn)) {
             throw new IllegalStateException("User not found.");
         }

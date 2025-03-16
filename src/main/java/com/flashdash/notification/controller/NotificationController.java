@@ -15,14 +15,14 @@ public class NotificationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@RequestParam String userFrn, @RequestParam String email) {
-        notificationService.registerUser(userFrn, email);
+    public ResponseEntity<Void> registerUser() {
+        notificationService.registerUser();
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/unregister")
-    public ResponseEntity<Void> unregisterUser(@RequestParam String userFrn) {
-        notificationService.unregisterUser(userFrn);
+    public ResponseEntity<Void> unregisterUser() {
+        notificationService.unregisterUser();
         return ResponseEntity.ok().build();
     }
 
