@@ -1,21 +1,54 @@
 package com.flashdash.notification.service;
 
+import com.flashdash.notification.model.NotificationChannel;
+import com.flashdash.notification.model.NotificationSubscriber;
+import com.flashdash.notification.repository.NotificationSubscriberRepository;
 import com.flashdash.notification.util.UserContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class NotificationService {
 
     private final UserContext userContext;
     private final EmailService emailService;
+    private final NotificationSubscriberRepository repository;
 
     @Value("${base.url}")
     private String baseUrl;
 
-    public NotificationService(UserContext userContext, EmailService emailService) {
+    public NotificationService(UserContext userContext,
+                               EmailService emailService,
+                               NotificationSubscriberRepository repository) {
+        this.repository = repository;
         this.userContext = userContext;
         this.emailService = emailService;
+    }
+
+    public void registerUser(String userFrn, String email) {
+        if (repository.existsByUserFrn(userFrn)) {
+            throw new IllegalStateException("User already registered.");
+        }
+
+        NotificationSubscriber subscriber = new NotificationSubscriber();
+        subscriber.setUserFrn(userFrn);
+        subscriber.setEmail(email);
+        subscriber.setCreatedAt(LocalDateTime.now());
+        subscriber.setUpdatedAt(LocalDateTime.now());
+        subscriber.setNotificationTime(LocalDateTime.now());
+        subscriber.setDailyNotifications(true);
+        subscriber.setNotificationChannel(NotificationChannel.EMAIL);
+
+        repository.save(subscriber);
+    }
+
+    public void unregisterUser(String userFrn) {
+        if (!repository.existsByUserFrn(userFrn)) {
+            throw new IllegalStateException("User not found.");
+        }
+        repository.deleteById(userFrn);
     }
 
     public void sendAccountConfirmationEmail(String token) {
