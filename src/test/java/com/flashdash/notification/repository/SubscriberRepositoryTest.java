@@ -1,7 +1,7 @@
 package com.flashdash.notification.repository;
 
 import com.flashdash.notification.model.NotificationChannel;
-import com.flashdash.notification.model.NotificationSubscriber;
+import com.flashdash.notification.model.Subscriber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,18 +17,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class NotificationSubscriberRepositoryTest {
+class SubscriberRepositoryTest {
 
     @Autowired
-    private NotificationSubscriberRepository repository;
+    private SubscriberRepository repository;
 
     @BeforeEach
     void setUp() {
         repository.deleteAll();
     }
 
-    private NotificationSubscriber createSubscriber(String userFrn, String email) {
-        NotificationSubscriber subscriber = new NotificationSubscriber();
+    private Subscriber createSubscriber(String userFrn, String email) {
+        Subscriber subscriber = new Subscriber();
         subscriber.setUserFrn(userFrn);
         subscriber.setEmail(email);
         subscriber.setCreatedAt(LocalDateTime.now());
@@ -42,11 +42,11 @@ class NotificationSubscriberRepositoryTest {
     @Test
     void shouldFindSubscriberByUserFrn() {
         // Arrange
-        NotificationSubscriber subscriber = createSubscriber("user-123", "test@example.com");
+        Subscriber subscriber = createSubscriber("user-123", "test@example.com");
         repository.save(subscriber);
 
         // Act
-        Optional<NotificationSubscriber> foundSubscriber = repository.findById("user-123");
+        Optional<Subscriber> foundSubscriber = repository.findById("user-123");
 
         // Assert
         assertThat(foundSubscriber).isPresent();
@@ -58,7 +58,7 @@ class NotificationSubscriberRepositoryTest {
     @Test
     void shouldReturnEmptyWhenUserFrnDoesNotExist() {
         // Act
-        Optional<NotificationSubscriber> foundSubscriber = repository.findById("nonexistent-userFrn");
+        Optional<Subscriber> foundSubscriber = repository.findById("nonexistent-userFrn");
 
         // Assert
         assertThat(foundSubscriber).isNotPresent();
@@ -67,7 +67,7 @@ class NotificationSubscriberRepositoryTest {
     @Test
     void shouldCheckIfUserFrnExists() {
         // Arrange
-        NotificationSubscriber subscriber = createSubscriber("user-456", "test2@example.com");
+        Subscriber subscriber = createSubscriber("user-456", "test2@example.com");
         repository.save(subscriber);
 
         // Act
@@ -89,7 +89,7 @@ class NotificationSubscriberRepositoryTest {
     @Test
     void shouldDeleteSubscriberByUserFrn() {
         // Arrange
-        NotificationSubscriber subscriber = createSubscriber("user-789", "test3@example.com");
+        Subscriber subscriber = createSubscriber("user-789", "test3@example.com");
         repository.save(subscriber);
         assertThat(repository.existsByUserFrn("user-789")).isTrue();
 

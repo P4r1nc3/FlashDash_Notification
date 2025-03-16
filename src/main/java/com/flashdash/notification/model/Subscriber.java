@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "notification_subscribers")
-public class NotificationSubscriber {
+@Table(name = "subscribers")
+public class Subscriber {
 
     @Id
     @Column(name = "user_frn", nullable = false, length = 256)
@@ -34,5 +34,5 @@ public class NotificationSubscriber {
     @Column(name = "notification_channel", nullable = false)
     private NotificationChannel notificationChannel;
 
-    public NotificationSubscriber() {}
+    public Subscriber() {}
 }

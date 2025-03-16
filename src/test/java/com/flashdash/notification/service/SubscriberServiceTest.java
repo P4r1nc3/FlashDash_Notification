@@ -2,8 +2,8 @@ package com.flashdash.notification.service;
 
 import com.flashdash.notification.exception.ErrorCode;
 import com.flashdash.notification.exception.FlashDashException;
-import com.flashdash.notification.model.NotificationSubscriber;
-import com.flashdash.notification.repository.NotificationSubscriberRepository;
+import com.flashdash.notification.model.Subscriber;
+import com.flashdash.notification.repository.SubscriberRepository;
 import com.flashdash.notification.util.UserContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,7 +29,7 @@ public class SubscriberServiceTest {
     private UserContext userContext;
 
     @MockitoBean
-    private NotificationSubscriberRepository repository;
+    private SubscriberRepository repository;
 
     @Test
     void testRegisterUser_Success() {
@@ -44,7 +44,7 @@ public class SubscriberServiceTest {
         subscriberService.registerUser();
 
         // Then
-        verify(repository, times(1)).save(any(NotificationSubscriber.class));
+        verify(repository, times(1)).save(any(Subscriber.class));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class SubscriberServiceTest {
 
         assertEquals(ErrorCode.E409001, exception.getErrorCode());
         assertEquals("User already registered.", exception.getMessage());
-        verify(repository, never()).save(any(NotificationSubscriber.class));
+        verify(repository, never()).save(any(Subscriber.class));
     }
 
     @Test

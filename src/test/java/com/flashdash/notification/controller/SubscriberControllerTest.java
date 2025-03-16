@@ -1,8 +1,10 @@
 package com.flashdash.notification.controller;
 
 import com.flashdash.notification.exception.FlashDashException;
-import com.flashdash.notification.model.NotificationSubscriber;
+import com.flashdash.notification.model.NotificationChannel;
+import com.flashdash.notification.model.Subscriber;
 import com.flashdash.notification.service.SubscriberService;
+import com.p4r1nc3.flashdash.notification.model.NotificationSubscriber;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.time.LocalDateTime;
 
 import static com.flashdash.notification.exception.ErrorCode.E404001;
 import static com.flashdash.notification.exception.ErrorCode.E409001;
@@ -77,19 +81,33 @@ class SubscriberControllerTest {
     @Test
     void testGetSubscriberDetails() {
         // Given
-        NotificationSubscriber mockSubscriber = new NotificationSubscriber();
+        Subscriber mockSubscriber = new Subscriber();
         mockSubscriber.setUserFrn("testFrn");
         mockSubscriber.setEmail("test@example.com");
+        mockSubscriber.setNotificationTime(LocalDateTime.of(2025, 3, 15, 8, 0)); // 8:00 AM
+        mockSubscriber.setDailyNotifications(true);
+        mockSubscriber.setNotificationChannel(NotificationChannel.EMAIL);
 
         when(subscriberService.getSubscriberDetails()).thenReturn(mockSubscriber);
 
         // When
-        ResponseEntity<?> response = subscriberController.getSubscriberDetails();
+        ResponseEntity<NotificationSubscriber> response = subscriberController.getSubscriberDetails();
 
         // Then
         verify(subscriberService, times(1)).getSubscriberDetails();
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-        assertEquals(mockSubscriber, response.getBody());
+
+        NotificationSubscriber expected = new NotificationSubscriber();
+        expected.setUserFrn(mockSubscriber.getUserFrn());
+        expected.setEmail(mockSubscriber.getEmail());
+        expected.setNotificationTime("2025-03-15T08:00:00");
+        expected.setDailyNotifications(mockSubscriber.isDailyNotifications());
+        expected.setNotificationChannel(NotificationSubscriber.NotificationChannelEnum.EMAIL);
+
+        assertEquals(expected.getUserFrn(), response.getBody().getUserFrn());
+        assertEquals(expected.getEmail(), response.getBody().getEmail());
+        assertEquals(expected.getDailyNotifications(), response.getBody().getDailyNotifications());
+        assertEquals(expected.getNotificationChannel(), response.getBody().getNotificationChannel());
     }
 
     @Test

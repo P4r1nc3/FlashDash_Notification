@@ -1,9 +1,6 @@
 package com.flashdash.notification.service;
 
-import com.flashdash.notification.exception.ErrorCode;
-import com.flashdash.notification.exception.FlashDashException;
-import com.flashdash.notification.model.NotificationSubscriber;
-import com.flashdash.notification.repository.NotificationSubscriberRepository;
+import com.flashdash.notification.repository.SubscriberRepository;
 import com.flashdash.notification.util.UserContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -28,7 +24,7 @@ class NotificationServiceTest {
     private EmailService emailService;
 
     @MockitoBean
-    private NotificationSubscriberRepository repository;
+    private SubscriberRepository repository;
 
     @Test
     void testSendAccountConfirmationEmail() {
