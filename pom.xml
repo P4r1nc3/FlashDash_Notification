@@ -135,7 +135,7 @@
         <dependency>
             <groupId>com.p4r1nc3.flashdash</groupId>
             <artifactId>flashdash-core-api</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.9</version>
         </dependency>
         <dependency>
             <groupId>com.p4r1nc3.flashdash</groupId>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.p4r1nc3.flashdash</groupId>
             <artifactId>flashdash-notification-api</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.5</version>
         </dependency>
     </dependencies>
 
