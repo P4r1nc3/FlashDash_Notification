@@ -17,6 +17,7 @@ public class NotificationService {
 
     private final UserContext userContext;
     private final EmailService emailService;
+    private final NotificationSchedulerService notificationSchedulerService;
     private final SubscriberRepository subscriberRepository;
 
     @Value("${base.url}")
@@ -24,9 +25,11 @@ public class NotificationService {
 
     public NotificationService(UserContext userContext,
                                EmailService emailService,
+                               NotificationSchedulerService notificationSchedulerService,
                                SubscriberRepository subscriberRepository) {
         this.userContext = userContext;
         this.emailService = emailService;
+        this.notificationSchedulerService = notificationSchedulerService;
         this.subscriberRepository = subscriberRepository;
     }
 
@@ -65,6 +68,9 @@ public class NotificationService {
         subscriber.setNotificationTime(LocalDateTime.now().with(notificationTime));
         subscriberRepository.save(subscriber);
 
+        notificationSchedulerService.cancelScheduledNotification(userFrn);
+        notificationSchedulerService.scheduleNotification(subscriber);
+
         String email = subscriber.getEmail();
         String subject = "🔔 Daily Notifications Enabled!";
         String content = "<strong>Great news!</strong><br><br>" +
@@ -82,6 +88,7 @@ public class NotificationService {
 
         subscriber.setDailyNotifications(false);
         subscriberRepository.save(subscriber);
+        notificationSchedulerService.cancelScheduledNotification(userFrn);
 
         String email = subscriber.getEmail();
         String subject = "🔕 Daily Notifications Disabled";
