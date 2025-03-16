@@ -46,7 +46,7 @@ class SubscriberRepositoryTest {
         repository.save(subscriber);
 
         // Act
-        Optional<Subscriber> foundSubscriber = repository.findById("user-123");
+        Optional<Subscriber> foundSubscriber = repository.findByUserFrn("user-123");
 
         // Assert
         assertThat(foundSubscriber).isPresent();
@@ -58,7 +58,7 @@ class SubscriberRepositoryTest {
     @Test
     void shouldReturnEmptyWhenUserFrnDoesNotExist() {
         // Act
-        Optional<Subscriber> foundSubscriber = repository.findById("nonexistent-userFrn");
+        Optional<Subscriber> foundSubscriber = repository.findByUserFrn("nonexistent-userFrn");
 
         // Assert
         assertThat(foundSubscriber).isNotPresent();
