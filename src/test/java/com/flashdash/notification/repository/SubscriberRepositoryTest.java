@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,14 +28,14 @@ class SubscriberRepositoryTest {
         repository.deleteAll();
     }
 
-    private Subscriber createSubscriber(String userFrn, String email) {
+    private Subscriber createSubscriber(String userFrn, String email, boolean dailyNotifications) {
         Subscriber subscriber = new Subscriber();
         subscriber.setUserFrn(userFrn);
         subscriber.setEmail(email);
         subscriber.setCreatedAt(LocalDateTime.now());
         subscriber.setUpdatedAt(LocalDateTime.now());
         subscriber.setNotificationTime(LocalDateTime.now());
-        subscriber.setDailyNotifications(true);
+        subscriber.setDailyNotifications(dailyNotifications);
         subscriber.setNotificationChannel(NotificationChannel.EMAIL);
         return subscriber;
     }
@@ -42,7 +43,7 @@ class SubscriberRepositoryTest {
     @Test
     void shouldFindSubscriberByUserFrn() {
         // Arrange
-        Subscriber subscriber = createSubscriber("user-123", "test@example.com");
+        Subscriber subscriber = createSubscriber("user-123", "test@example.com", true);
         repository.save(subscriber);
 
         // Act
@@ -67,7 +68,7 @@ class SubscriberRepositoryTest {
     @Test
     void shouldCheckIfUserFrnExists() {
         // Arrange
-        Subscriber subscriber = createSubscriber("user-456", "test2@example.com");
+        Subscriber subscriber = createSubscriber("user-456", "test2@example.com", true);
         repository.save(subscriber);
 
         // Act
@@ -89,7 +90,7 @@ class SubscriberRepositoryTest {
     @Test
     void shouldDeleteSubscriberByUserFrn() {
         // Arrange
-        Subscriber subscriber = createSubscriber("user-789", "test3@example.com");
+        Subscriber subscriber = createSubscriber("user-789", "test3@example.com", true);
         repository.save(subscriber);
         assertThat(repository.existsByUserFrn("user-789")).isTrue();
 
@@ -98,5 +99,38 @@ class SubscriberRepositoryTest {
 
         // Assert
         assertThat(repository.existsByUserFrn("user-789")).isFalse();
+    }
+
+    @Test
+    void shouldFindSubscribersWithDailyNotificationsTrue() {
+        // Arrange
+        Subscriber subscriber1 = createSubscriber("user-1", "user1@example.com", true);
+        Subscriber subscriber2 = createSubscriber("user-2", "user2@example.com", false);
+        Subscriber subscriber3 = createSubscriber("user-3", "user3@example.com", true);
+
+        repository.saveAll(List.of(subscriber1, subscriber2, subscriber3));
+
+        // Act
+        List<Subscriber> subscribersWithNotifications = repository.findByDailyNotificationsTrue();
+
+        // Assert
+        assertThat(subscribersWithNotifications).hasSize(2);
+        assertThat(subscribersWithNotifications).extracting(Subscriber::getUserFrn)
+                .containsExactlyInAnyOrder("user-1", "user-3");
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoUsersHaveDailyNotificationsTrue() {
+        // Arrange
+        Subscriber subscriber1 = createSubscriber("user-1", "user1@example.com", false);
+        Subscriber subscriber2 = createSubscriber("user-2", "user2@example.com", false);
+
+        repository.saveAll(List.of(subscriber1, subscriber2));
+
+        // Act
+        List<Subscriber> subscribersWithNotifications = repository.findByDailyNotificationsTrue();
+
+        // Assert
+        assertThat(subscribersWithNotifications).isEmpty();
     }
 }
