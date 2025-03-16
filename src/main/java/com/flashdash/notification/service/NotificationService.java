@@ -1,62 +1,22 @@
 package com.flashdash.notification.service;
 
-import com.flashdash.notification.exception.ErrorCode;
-import com.flashdash.notification.exception.FlashDashException;
-import com.flashdash.notification.model.NotificationChannel;
-import com.flashdash.notification.model.NotificationSubscriber;
-import com.flashdash.notification.repository.NotificationSubscriberRepository;
 import com.flashdash.notification.util.UserContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class NotificationService {
 
     private final UserContext userContext;
     private final EmailService emailService;
-    private final NotificationSubscriberRepository repository;
 
     @Value("${base.url}")
     private String baseUrl;
 
     public NotificationService(UserContext userContext,
-                               EmailService emailService,
-                               NotificationSubscriberRepository repository) {
-        this.repository = repository;
+                               EmailService emailService) {
         this.userContext = userContext;
         this.emailService = emailService;
-    }
-
-    public void registerUser() {
-        String userFrn = userContext.getUserFrn();
-        String email = userContext.getUserEmail();
-
-        if (repository.existsByUserFrn(userFrn)) {
-            throw new FlashDashException(ErrorCode.E409001, "User already registered.");
-        }
-
-        NotificationSubscriber subscriber = new NotificationSubscriber();
-        subscriber.setUserFrn(userFrn);
-        subscriber.setEmail(email);
-        subscriber.setCreatedAt(LocalDateTime.now());
-        subscriber.setUpdatedAt(LocalDateTime.now());
-        subscriber.setNotificationTime(LocalDateTime.now());
-        subscriber.setDailyNotifications(true);
-        subscriber.setNotificationChannel(NotificationChannel.EMAIL);
-
-        repository.save(subscriber);
-    }
-
-    public void unregisterUser() {
-        String userFrn = userContext.getUserFrn();
-
-        if (!repository.existsByUserFrn(userFrn)) {
-            throw new FlashDashException(ErrorCode.E404001, "User not found.");
-        }
-
-        repository.deleteByUserFrn(userFrn);
     }
 
     public void sendAccountConfirmationEmail(String token) {

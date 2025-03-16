@@ -23,32 +23,6 @@ class NotificationControllerTest {
     private NotificationService notificationService;
 
     @Test
-    void testRegisterUser() {
-        // Given
-        doNothing().when(notificationService).registerUser();
-
-        // When
-        ResponseEntity<Void> response = notificationController.registerUser();
-
-        // Then
-        verify(notificationService, times(1)).registerUser();
-        assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
-    }
-
-    @Test
-    void testUnregisterUser() {
-        // Given
-        doNothing().when(notificationService).unregisterUser();
-
-        // When
-        ResponseEntity<Void> response = notificationController.unregisterUser();
-
-        // Then
-        verify(notificationService, times(1)).unregisterUser();
-        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCodeValue());
-    }
-
-    @Test
     void testSendAccountConfirmationEmail() {
         // Given
         String token = "testToken";
