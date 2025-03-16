@@ -14,6 +14,18 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<Void> registerUser(@RequestParam String userFrn, @RequestParam String email) {
+        notificationService.registerUser(userFrn, email);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/unregister")
+    public ResponseEntity<Void> unregisterUser(@RequestParam String userFrn) {
+        notificationService.unregisterUser(userFrn);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/confirm-account")
     public ResponseEntity<Void> sendAccountConfirmationEmail(@RequestParam String token) {
         notificationService.sendAccountConfirmationEmail(token);
