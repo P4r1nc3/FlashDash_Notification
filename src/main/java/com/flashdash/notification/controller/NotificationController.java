@@ -29,13 +29,13 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @PostMapping("/daily/enable")
+    @PutMapping("/daily/enable")
     public ResponseEntity<Void> enableDailyNotifications(@RequestParam(required = false) LocalTime notificationTime) {
         notificationService.enableDailyNotifications(notificationTime);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/daily/disable")
+    @PutMapping("/daily/disable")
     public ResponseEntity<Void> disableDailyNotifications() {
         notificationService.disableDailyNotifications();
         return ResponseEntity.ok().build();
