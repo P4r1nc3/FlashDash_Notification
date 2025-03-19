@@ -52,6 +52,19 @@ class NotificationControllerTest {
     }
 
     @Test
+    void testFriendInvitationAcceptedEmail() {
+        // Given
+        doNothing().when(notificationService).sendFriendAcceptedEmail();
+
+        // When
+        ResponseEntity<Void> response = notificationController.sendFriendAcceptedEmail();
+
+        // Then
+        verify(notificationService, times(1)).sendFriendAcceptedEmail();
+        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+    }
+
+    @Test
     void testEnableDailyNotifications_DefaultTime() {
         // Given
         doNothing().when(notificationService).enableDailyNotifications(null);

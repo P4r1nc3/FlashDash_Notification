@@ -29,6 +29,12 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
+    @PostMapping("/friend-accepted")
+    public ResponseEntity<Void> sendFriendAcceptedEmail() {
+        notificationService.sendFriendAcceptedEmail();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
     @PutMapping("/daily/enable")
     public ResponseEntity<Void> enableDailyNotifications(@RequestParam(required = false) LocalTime notificationTime) {
         notificationService.enableDailyNotifications(notificationTime);
