@@ -34,12 +34,14 @@ public class NotificationService {
     }
 
     public void sendAccountConfirmationEmail(String token) {
-        String confirmationLink = baseUrl + "/auth/activate?token=" + token;
+        String confirmationLink = baseUrl + "/activate?token=" + token;
         String email = userContext.getUserEmail();
         String subject = "✅ Confirm Your FlashDash Account";
-        String content = "<strong>Welcome to FlashDash!</strong><br><br>" +
-                "Click the button below to activate your account:<br><br>" +
-                "<a href='" + confirmationLink + "' class='button'>Activate Account</a>";
+        String content = "<h2>Welcome to FlashDash!</h2>" +
+                "<p>Thank you for signing up. To start learning with FlashDash, please activate your account by clicking the button below.</p>" +
+                "<p><a href='" + confirmationLink + "' class='button' style='color: white !important;'>Activate Account</a></p>" +
+                "<p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>" +
+                "<p style='font-size: 14px; color: #6b7280;'>" + confirmationLink + "</p>";
 
         emailService.sendEmail(email, subject, content);
     }
@@ -47,9 +49,21 @@ public class NotificationService {
     public void sendFriendInviteEmail() {
         String email = userContext.getUserEmail();
         String subject = "🎉 New Friend Invitation on FlashDash!";
-        String content = "<strong>You have a new friend request!</strong><br><br>" +
-                "Someone has sent you a friend invitation. Click below to check your invites:<br><br>" +
-                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+        String content = "<h2>You've Received a Friend Request!</h2>" +
+                "<p>Someone wants to connect with you on FlashDash. Adding friends helps you share decks and study together.</p>" +
+                "<p><a href='" + baseUrl + "/friends' class='button' style='color: white !important;'>View Friend Request</a></p>" +
+                "<p>Happy learning together!</p>";
+
+        emailService.sendEmail(email, subject, content);
+    }
+
+    public void sendFriendAcceptedEmail() {
+        String email = userContext.getUserEmail();
+        String subject = "🤝 Friend Request Accepted on FlashDash!";
+        String content = "<h2>Friend Request Accepted!</h2>" +
+                "<p>Great news! Someone has accepted your friend request on FlashDash. You can now share decks and study together.</p>" +
+                "<p><a href='" + baseUrl + "/friends' class='button' style='color: white !important;'>View Friends</a></p>" +
+                "<p>Start collaborating and boost your learning experience!</p>";
 
         emailService.sendEmail(email, subject, content);
     }
@@ -73,9 +87,11 @@ public class NotificationService {
 
         String email = subscriber.getEmail();
         String subject = "🔔 Daily Notifications Enabled!";
-        String content = "<strong>Great news!</strong><br><br>" +
-                "You have successfully enabled daily learning reminders for <strong>" + notificationTime + "</strong>. Stay on track with your goals!<br><br>" +
-                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+        String content = "<h2>Daily Reminders Activated</h2>" +
+                "<p>You've successfully enabled daily learning reminders at <strong>" + notificationTime + "</strong>.</p>" +
+                "<p>Consistent practice is key to effective learning. We'll send you a friendly reminder each day to help you stay on track with your goals.</p>" +
+                "<p><a href='" + baseUrl + "/account' class='button' style='color: white !important;'>Manage Notifications</a></p>" +
+                "<p>Keep up the great work!</p>";
 
         emailService.sendEmail(email, subject, content);
     }
@@ -92,9 +108,11 @@ public class NotificationService {
 
         String email = subscriber.getEmail();
         String subject = "🔕 Daily Notifications Disabled";
-        String content = "<strong>You have disabled daily reminders.</strong><br><br>" +
-                "You will no longer receive learning notifications. You can re-enable them anytime.<br><br>" +
-                "<a href='" + baseUrl + "' class='button'>Go to FlashDash</a>";
+        String content = "<h2>Daily Reminders Paused</h2>" +
+                "<p>You've successfully disabled daily learning reminders. You won't receive notifications until you choose to enable them again.</p>" +
+                "<p>You can re-enable notifications at any time from your account settings.</p>" +
+                "<p><a href='" + baseUrl + "/account' class='button' style='color: white !important;'>Manage Notifications</a></p>" +
+                "<p>We're still here whenever you're ready to continue your learning journey!</p>";
 
         emailService.sendEmail(email, subject, content);
     }
