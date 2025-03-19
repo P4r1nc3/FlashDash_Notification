@@ -8,7 +8,9 @@ import com.flashdash.notification.util.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,6 +40,9 @@ class NotificationServiceTest {
 
     @MockitoBean
     private SubscriberRepository subscriberRepository;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     private Subscriber subscriber;
 
@@ -62,11 +68,19 @@ class NotificationServiceTest {
         notificationService.sendAccountConfirmationEmail(token);
 
         // Then
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(1)).sendEmail(
                 eq(email),
                 eq("✅ Confirm Your FlashDash Account"),
-                contains("Activate Account")
+                contentCaptor.capture()
         );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Welcome to FlashDash!");
+        assertThat(emailContent).contains("activate?token=" + token);
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("Activate Account");
     }
 
     @Test
@@ -79,11 +93,46 @@ class NotificationServiceTest {
         notificationService.sendFriendInviteEmail();
 
         // Then
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(1)).sendEmail(
                 eq(email),
                 eq("🎉 New Friend Invitation on FlashDash!"),
-                contains("Go to FlashDash")
+                contentCaptor.capture()
         );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("You've Received a Friend Request!");
+        assertThat(emailContent).contains("/friends");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("View Friend Request");
+    }
+
+
+    @Test
+    void testSendFriendAcceptedEmail() {
+        // Given
+        String email = "user@example.com";
+        when(userContext.getUserEmail()).thenReturn(email);
+
+        // When
+        notificationService.sendFriendAcceptedEmail();
+
+        // Then
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
+        verify(emailService, times(1)).sendEmail(
+                eq(email),
+                eq("🤝 Friend Request Accepted on FlashDash!"),
+                contentCaptor.capture()
+        );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Friend Request Accepted!");
+        assertThat(emailContent).contains("/friends");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("View Friends");
+        assertThat(emailContent).contains("Start collaborating and boost your learning experience");
     }
 
     @Test
@@ -99,11 +148,21 @@ class NotificationServiceTest {
         verify(subscriberRepository, times(1)).save(subscriber);
         verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
         verify(notificationSchedulerService, times(1)).scheduleNotification(subscriber);
+
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔔 Daily Notifications Enabled!"),
-                contains("08:00")
+                contentCaptor.capture()
         );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Daily Reminders Activated");
+        assertThat(emailContent).contains("<strong>08:00</strong>");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("Manage Notifications");
+        assertThat(subscriber.isDailyNotifications()).isTrue();
     }
 
     @Test
@@ -121,11 +180,26 @@ class NotificationServiceTest {
         verify(subscriberRepository, times(1)).save(subscriber);
         verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
         verify(notificationSchedulerService, times(1)).scheduleNotification(subscriber);
+
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔔 Daily Notifications Enabled!"),
-                contains("14:30")
+                contentCaptor.capture()
         );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Daily Reminders Activated");
+        assertThat(emailContent).contains("<strong>14:30</strong>");
+        assertThat(emailContent).contains("/account");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(subscriber.isDailyNotifications()).isTrue();
+
+        // Verify that the notification time was set correctly
+        LocalTime setTime = subscriber.getNotificationTime().toLocalTime();
+        assertThat(setTime.getHour()).isEqualTo(customTime.getHour());
+        assertThat(setTime.getMinute()).isEqualTo(customTime.getMinute());
     }
 
     @Test
@@ -157,11 +231,22 @@ class NotificationServiceTest {
         // Then
         verify(subscriberRepository, times(1)).save(subscriber);
         verify(notificationSchedulerService, times(1)).cancelScheduledNotification(subscriber.getUserFrn());
+
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailService, times(1)).sendEmail(
                 eq(subscriber.getEmail()),
                 eq("🔕 Daily Notifications Disabled"),
-                contains("Go to FlashDash")
+                contentCaptor.capture()
         );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Daily Reminders Paused");
+        assertThat(emailContent).contains("You've successfully disabled daily learning reminders");
+        assertThat(emailContent).contains("/account");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("Manage Notifications");
+        assertThat(subscriber.isDailyNotifications()).isFalse();
     }
 
     @Test
