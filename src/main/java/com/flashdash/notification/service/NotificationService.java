@@ -34,7 +34,7 @@ public class NotificationService {
     }
 
     public void sendAccountConfirmationEmail(String token) {
-        String confirmationLink = baseUrl + "/activate?token=" + token;
+        String confirmationLink = baseUrl + "/login?token=" + token;
         String email = userContext.getUserEmail();
         String subject = "✅ Confirm Your FlashDash Account";
         String content = "<h2>Welcome to FlashDash!</h2>" +
