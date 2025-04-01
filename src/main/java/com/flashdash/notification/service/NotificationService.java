@@ -46,6 +46,17 @@ public class NotificationService {
         emailService.sendEmail(email, subject, content);
     }
 
+    public void sendAchievementUnlockedEmail() {
+        String email = userContext.getUserEmail();
+        String subject = "🏆 Achievement Unlocked on FlashDash!";
+        String content = "<h2>Congratulations! You've Unlocked an Achievement!</h2>" +
+                "<p>Your dedication to learning is paying off. Keep up the great work and unlock more achievements!</p>" +
+                "<p><a href='" + baseUrl + "/account' class='button' style='color: white !important;'>View Your Achievements</a></p>" +
+                "<p>Every achievement is a step toward mastery. We're excited to see your progress!</p>";
+
+        emailService.sendEmail(email, subject, content);
+    }
+
     public void sendFriendInviteEmail() {
         String email = userContext.getUserEmail();
         String subject = "🎉 New Friend Invitation on FlashDash!";

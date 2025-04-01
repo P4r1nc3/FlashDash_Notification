@@ -23,6 +23,12 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
+    @PostMapping("/achievement-unlocked")
+    public ResponseEntity<Void> sendAchievementUnlockedEmail() {
+        notificationService.sendAchievementUnlockedEmail();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
     @PostMapping("/friend-invite")
     public ResponseEntity<Void> sendFriendInviteEmail() {
         notificationService.sendFriendInviteEmail();
