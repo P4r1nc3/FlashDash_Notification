@@ -77,7 +77,7 @@ class NotificationServiceTest {
 
         String emailContent = contentCaptor.getValue();
         assertThat(emailContent).contains("Welcome to FlashDash!");
-        assertThat(emailContent).contains("/login?token=" + token); // Fixed this line
+        assertThat(emailContent).contains("/login?token=" + token);
         assertThat(emailContent).contains("class='button'");
         assertThat(emailContent).contains("style='color: white !important;'");
         assertThat(emailContent).contains("Activate Account");
