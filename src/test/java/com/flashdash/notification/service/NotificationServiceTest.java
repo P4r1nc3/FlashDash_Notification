@@ -77,10 +77,36 @@ class NotificationServiceTest {
 
         String emailContent = contentCaptor.getValue();
         assertThat(emailContent).contains("Welcome to FlashDash!");
-        assertThat(emailContent).contains("activate?token=" + token);
+        assertThat(emailContent).contains("/login?token=" + token); // Fixed this line
         assertThat(emailContent).contains("class='button'");
         assertThat(emailContent).contains("style='color: white !important;'");
         assertThat(emailContent).contains("Activate Account");
+    }
+
+    @Test
+    void testSendAchievementUnlockedEmail() {
+        // Given
+        String email = "user@example.com";
+        when(userContext.getUserEmail()).thenReturn(email);
+
+        // When
+        notificationService.sendAchievementUnlockedEmail();
+
+        // Then
+        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
+        verify(emailService, times(1)).sendEmail(
+                eq(email),
+                eq("🏆 Achievement Unlocked on FlashDash!"),
+                contentCaptor.capture()
+        );
+
+        String emailContent = contentCaptor.getValue();
+        assertThat(emailContent).contains("Congratulations! You've Unlocked an Achievement!");
+        assertThat(emailContent).contains("/account");
+        assertThat(emailContent).contains("class='button'");
+        assertThat(emailContent).contains("style='color: white !important;'");
+        assertThat(emailContent).contains("View Your Achievements");
+        assertThat(emailContent).contains("Every achievement is a step toward mastery");
     }
 
     @Test

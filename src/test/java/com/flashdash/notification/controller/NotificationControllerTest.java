@@ -39,6 +39,19 @@ class NotificationControllerTest {
     }
 
     @Test
+    void testSendAchievementUnlockedEmail() {
+        // Given
+        doNothing().when(notificationService).sendAchievementUnlockedEmail();
+
+        // When
+        ResponseEntity<Void> response = notificationController.sendAchievementUnlockedEmail();
+
+        // Then
+        verify(notificationService, times(1)).sendAchievementUnlockedEmail();
+        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCodeValue());
+    }
+
+    @Test
     void testSendFriendInviteEmail() {
         // Given
         doNothing().when(notificationService).sendFriendInviteEmail();
