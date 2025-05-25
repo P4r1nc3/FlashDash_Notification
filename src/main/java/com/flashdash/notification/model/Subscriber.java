@@ -1,13 +1,9 @@
 package com.flashdash.notification.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "subscribers")
 public class Subscriber {
 
@@ -35,4 +31,60 @@ public class Subscriber {
     private NotificationChannel notificationChannel;
 
     public Subscriber() {}
+
+    public String getUserFrn() {
+        return userFrn;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public LocalDateTime getNotificationTime() {
+        return notificationTime;
+    }
+
+    public boolean isDailyNotifications() {
+        return dailyNotifications;
+    }
+
+    public NotificationChannel getNotificationChannel() {
+        return notificationChannel;
+    }
+
+    public void setUserFrn(String userFrn) {
+        this.userFrn = userFrn;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setNotificationTime(LocalDateTime notificationTime) {
+        this.notificationTime = notificationTime;
+    }
+
+    public void setDailyNotifications(boolean dailyNotifications) {
+        this.dailyNotifications = dailyNotifications;
+    }
+
+    public void setNotificationChannel(NotificationChannel notificationChannel) {
+        this.notificationChannel = notificationChannel;
+    }
 }
